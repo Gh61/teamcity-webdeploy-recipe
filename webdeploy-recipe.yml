@@ -1,7 +1,7 @@
 name: gh61_tc/webdeploy
 title: Web Deploy
 version: 1.0.0
-description: |
+description: >-
   Deploys the output of dotnet publish to an IIS site using msdeploy (Web Deploy).
   Supports skipping the App_Data folder during deployment (same behavior as .NET Framework WebDeploy)
   and optionally setting write permissions on App_Data for the IIS application pool identity.
@@ -10,7 +10,7 @@ inputs:
   - sourcePath:
       type: text
       label: Source path
-      description: Path to the published output. Default is %teamcity.build.checkoutDir%\publish
+      description: "Path to the published output. Default: %teamcity.build.checkoutDir%\\publish"
       default: "%teamcity.build.checkoutDir%\\publish"
       required: true
 
@@ -29,30 +29,30 @@ inputs:
   - username:
       type: text
       label: Username
-      description: "Example: %PublishUser%"
+      description: "Web Deploy username. Example: %PublishUser%"
       required: true
 
   - password:
       type: password
       label: Password
-      description: Use a secret parameter for the password. Example: %PublishPassword%
+      description: "Web Deploy password. Use a secret parameter, example: %PublishPassword%"
       required: true
 
   - skipAppData:
       type: boolean
       label: Skip App_Data
-      description: If enabled, App_Data folder (and its content) on destination will not be deleted during deploy (same behavior as .NET Framework WebDeploy)
+      description: "If enabled, App_Data folder and its content on destination will not be deleted during deploy (same behavior as .NET Framework WebDeploy)"
       default: "true"
 
   - setAppDataPermissions:
       type: boolean
       label: Set App_Data permissions
-      description: If enabled, sets write permissions for the IIS application pool identity on the App_Data folder.
+      description: "If enabled, sets write permissions for the IIS application pool identity on the App_Data folder."
       default: "false"
 
 steps:
   - name: Web Deploy
-    script: |
+    script: |-
       where msdeploy.exe
       if errorlevel 1 exit /b 1
 
