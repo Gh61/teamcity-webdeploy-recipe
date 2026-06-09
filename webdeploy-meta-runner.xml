@@ -38,7 +38,7 @@
 if errorlevel 1 exit /b 1
 
 set SKIP_APP_DATA=
-if "%webdeploy.skipAppData%"=="true" set SKIP_APP_DATA=-skip:skipAction=Delete,objectName=dirPath,absolutePath=App_Data$ -skip:skipAction=Delete,objectName=filePath,absolutePath=App_Data
+if "%webdeploy.skipAppData%"=="true" set SKIP_APP_DATA=-skip:skipAction=Delete,objectName=dirPath,absolutePath=App_Data -skip:skipAction=Delete,objectName=filePath,absolutePath=App_Data
 
 msdeploy.exe ^
   -verb:sync ^
