@@ -1,0 +1,71 @@
+<meta-runner name="Web Deploy">
+  <description>Step for explicit use of msdeploy to deploy the output of dotnet publish</description>
+  <settings>
+    <parameters>
+      <param
+        name="webdeploy.sourcePath"
+        value="%teamcity.build.checkoutDir%\publish"
+        spec="text label='Source path' description='Path to published output. Default: %teamcity.build.checkoutDir%\publish'" />
+      <param
+        name="webdeploy.siteName"
+        value=""
+        spec="text label='IIS site name' description='Example: MySite or Default Web Site/MyApp'" />
+      <param
+        name="webdeploy.url"
+        value=""
+        spec="text label='Web Deploy URL' description='Example: https://server.example.com:8172/msdeploy.axd'" />
+      <param
+        name="webdeploy.username"
+        value=""
+        spec="text label='Username' description='Example: %PublishUser%'" />
+      <param
+        name="webdeploy.password"
+        spec="text label='Password' description='Use secret parameter for password. Example: %PublishPassword%'" />
+      <param
+        name="webdeploy.skipAppData"
+        value="true"
+        spec="checkbox label='Skip App_Data' description='If enabled, App_Data folder (and its content) on destination will not be deleted during deploy (same behavior as .NET Framework WebDeploy)' checkedValue='true' uncheckedValue='false'" />
+      <param
+        name="webdeploy.setAppDataPermissions"
+        value="false"
+        spec="checkbox label='Set App_Data permissions' description='If enabled, sets write permissions for the IIS application pool identity on the App_Data folder.' checkedValue='true' uncheckedValue='false'" />
+    </parameters>
+    <build-runners>
+      <runner name="Web Deploy" type="simpleRunner">
+        <parameters>
+          <param name="log.stderr.as.errors" value="true" />
+          <param name="script.content"><![CDATA[where msdeploy.exe
+if errorlevel 1 exit /b 1
+
+set SKIP_APP_DATA=
+if "%webdeploy.skipAppData%"=="true" set SKIP_APP_DATA=-skip:skipAction=Delete,objectName=dirPath,absolutePath=App_Data$ -skip:skipAction=Delete,objectName=filePath,absolutePath=App_Data
+
+msdeploy.exe ^
+  -verb:sync ^
+  -source:contentPath="%webdeploy.sourcePath%" ^
+  -dest:contentPath="%webdeploy.siteName%",computerName="%webdeploy.url%?site=%webdeploy.siteName%",userName="%webdeploy.username%",password="%webdeploy.password%",authType="Basic",includeAcls="False" ^
+  -enableRule:AppOffline ^
+  -allowUntrusted ^
+  %SKIP_APP_DATA% ^
+  -verbose
+if errorlevel 1 exit /b 1
+
+if "%webdeploy.setAppDataPermissions%"=="true" (
+  msdeploy.exe ^
+    -verb:sync ^
+    -source:setAcl ^
+    -dest:setAcl="%webdeploy.siteName%/App_Data",setAclAccess=Write,computerName="%webdeploy.url%?site=%webdeploy.siteName%",userName="%webdeploy.username%",password="%webdeploy.password%",authType="Basic" ^
+    -allowUntrusted ^
+    -verbose
+  if errorlevel 1 exit /b 1
+)]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+    </build-runners>
+    <requirements>
+      <exists id="RQ_1" name="system.msdeploy" />
+    </requirements>
+  </settings>
+</meta-runner>
