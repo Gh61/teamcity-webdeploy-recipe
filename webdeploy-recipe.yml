@@ -10,7 +10,7 @@ inputs:
   - sourcePath:
       type: text
       label: Source path
-      description: "Path to the published output. Default: %teamcity.build.checkoutDir%\\publish"
+      description: 'Path to the published output. Default: %teamcity.build.checkoutDir%\publish'
       default: "%teamcity.build.checkoutDir%\\publish"
       required: true
 
@@ -29,13 +29,13 @@ inputs:
   - username:
       type: text
       label: Username
-      description: "Web Deploy username. Example: %PublishUser%"
+      description: 'Web Deploy username. Example: %PublishUser%'
       required: true
 
   - password:
       type: password
       label: Password
-      description: "Web Deploy password. Use a secret parameter, example: %PublishPassword%"
+      description: 'Web Deploy password. Use a secret parameter, example: %PublishPassword%'
       required: true
 
   - skipAppData:
